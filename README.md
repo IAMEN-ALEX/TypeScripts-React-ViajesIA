@@ -8,7 +8,8 @@ Proyecto de aplicación web de viajes con integración de IA.
 - Animaciones interactivas (Three.js)
 - Base de datos SQLite
 - Next.js 14+ App Router
-- TypeScript + React
+- TypeScript + React    
+- IA con OpenAI gemini 3.5
 ## Ejecución
 
 ```bash
