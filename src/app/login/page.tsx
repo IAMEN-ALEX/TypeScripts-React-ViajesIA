@@ -32,7 +32,7 @@ export default function Login() {
             const data = await res.json();
 
             if (res.ok) {
-                router.push('/');
+                router.push('/dashboard');
                 // In a real app, you might want to redirect to dashboard or user page
             } else {
                 setError(data.error || 'Login failed');

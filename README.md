@@ -9,7 +9,9 @@ Proyecto de aplicación web de viajes con integración de IA.
 - Base de datos SQLite
 - Next.js 14+ App Router
 - TypeScript + React    
-- IA con OpenAI gemini 3.5
+- IA con OpenAI gemini 3.5  
+- Dashboard con notas y viajes+IA
+
 ## Ejecución
 
 ```bash
