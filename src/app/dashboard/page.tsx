@@ -1,8 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Container, Row, Col, Form, Button, Spinner, Badge } from 'react-bootstrap';
+import dynamic from 'next/dynamic';
 import 'bootstrap/dist/css/bootstrap.min.css';
+
+// Dynamically import FloatingLines
+const FloatingLines = dynamic(() => import('@/components/ui/FloatingLines'), { ssr: false });
 
 interface Note {
     id: number;
@@ -19,6 +24,7 @@ interface Trip {
 }
 
 export default function Dashboard() {
+    const router = useRouter();
     const [trips, setTrips] = useState<Trip[]>([]);
     const [destination, setDestination] = useState('');
     const [startDate, setStartDate] = useState('');
@@ -31,6 +37,10 @@ export default function Dashboard() {
     useEffect(() => {
         fetchTrips();
     }, []);
+
+    const handleLogout = () => {
+        router.push('/login');
+    };
 
     const fetchTrips = async () => {
         try {
@@ -110,12 +120,31 @@ export default function Dashboard() {
     }
 
     return (
-        <div className="premium-bg pb-5">
-            <Container className="py-5" style={{ maxWidth: '900px' }}>
+        <div className="premium-bg pb-5 position-relative min-vh-100 overflow-hidden">
+            {/* Background Animation */}
+            <div className="position-fixed top-0 start-0 w-100 h-100" style={{ zIndex: 0 }}>
+                <FloatingLines
+                    linesGradient={['#C084FC', '#E879F9', '#818CF8']}
+                    lineCount={[6, 8, 10]}
+                    animationSpeed={0.3}
+                />
+            </div>
+
+            <Container className="py-5 position-relative" style={{ maxWidth: '900px', zIndex: 10 }}>
+                <div className="d-flex justify-content-end mb-4">
+                    <Button
+                        variant="outline-light"
+                        onClick={handleLogout}
+                        className="px-4 py-2 rounded-pill"
+                        style={{ backdropFilter: 'blur(10px)', background: 'rgba(255,255,255,0.1)' }}
+                    >
+                        Logout
+                    </Button>
+                </div>
 
                 {/* Ask a Question Section */}
                 <div className="mb-5 text-center">
-                    <h2 className="text-white mb-4 title-glow">Ask a Question!</h2>
+                    <h2 className="text-white mb-4 title-glow">Hace una Pregunta acerca de los viajes!</h2>
                     <Form.Group className="mb-3">
                         <Form.Control
                             type="text"
@@ -127,14 +156,14 @@ export default function Dashboard() {
                     </Form.Group>
                     <div className="d-grid gap-2">
                         <Button className="btn-premium-neon py-2">
-                            Ask
+                            Pregunta
                         </Button>
                     </div>
                 </div>
 
                 {/* Add Trip Section */}
                 <div className="mb-5">
-                    <h3 className="text-white text-center mb-4 title-glow">Add Trip</h3>
+                    <h3 className="text-white text-center mb-4 title-glow">Agrega un viaje</h3>
                     <div className="bg-transparent">
                         <Row className="g-3 align-items-end">
                             <Col md={4}>
@@ -143,7 +172,7 @@ export default function Dashboard() {
                                     value={destination}
                                     onChange={(e) => setDestination(e.target.value)}
                                 >
-                                    <option value="">Select Destination</option>
+                                    <option value="">Seleccionar Destino</option>
                                     {destinations.map(d => <option key={d} value={d}>{d}</option>)}
                                 </Form.Select>
                             </Col>
@@ -165,7 +194,7 @@ export default function Dashboard() {
                             </Col>
                             <Col md={2}>
                                 <Button className="btn-premium-neon w-100 h-100 d-flex align-items-center justify-content-center" onClick={handleAddTrip}>
-                                    Add Trip
+                                    Agregar Viaje
                                 </Button>
                             </Col>
                         </Row>
@@ -185,7 +214,7 @@ export default function Dashboard() {
                                         {trip.destination}
                                     </Badge>
                                     <Button variant="danger" size="sm" onClick={() => handleDeleteTrip(trip.id)}>
-                                        Delete
+                                        Eliminar Viaje
                                     </Button>
                                 </div>
                             </div>
@@ -220,7 +249,7 @@ export default function Dashboard() {
                                     handleAddNote(trip.id, input.value);
                                     input.value = '';
                                 }}>
-                                    Add Note
+                                    Agregar Nota
                                 </Button>
                             </div>
                         </div>
