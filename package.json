@@ -1,0 +1,33 @@
+{
+  "name": "notadeviajesia",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/three": "^0.181.0",
+    "bootstrap": "^5.3.8",
+    "next": "^16.0.8",
+    "react": "^19.2.1",
+    "react-bootstrap": "^2.10.10",
+    "react-dom": "^19.2.1",
+    "sqlite3": "^5.1.7",
+    "three": "^0.181.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.2",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "^9.39.1",
+    "eslint-config-next": "^16.0.8",
+    "typescript": "^5.9.3"
+  }
+}
