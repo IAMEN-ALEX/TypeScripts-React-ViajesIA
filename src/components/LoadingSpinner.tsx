@@ -1,9 +1,9 @@
 import React from 'react';
-import { Spinner } from 'react-bootstrap';
+import { Spinner, SpinnerProps } from 'react-bootstrap';
 
 interface LoadingSpinnerProps {
-    size?: 'sm' | 'lg';
-    variant?: string;
+    size?: SpinnerProps["size"];
+    variant?: SpinnerProps["variant"];
     text?: string;
 }
 
