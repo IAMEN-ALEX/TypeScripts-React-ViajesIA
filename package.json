@@ -2,7 +2,7 @@
   "name": "notadeviajesia",
   "version": "1.0.0",
   "description": "Aplicación web moderna para planificar viajes con asistencia de IA",
-  "author": "IAMEN-ALEX",
+  "author": "",
   "main": "index.js",
   "scripts": {
     "dev": "next dev",
@@ -11,12 +11,12 @@
     "lint": "next lint"
   },
   "keywords": [],
-  "author": "",
   "license": "ISC",
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@types/three": "^0.181.0",
     "@vercel/postgres": "^0.10.0",
+    "bcryptjs": "^3.0.3",
     "bootstrap": "^5.3.8",
     "dotenv": "^17.2.3",
     "groq-sdk": "^0.37.0",
@@ -28,6 +28,7 @@
     "three": "^0.181.2"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^24.10.2",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",

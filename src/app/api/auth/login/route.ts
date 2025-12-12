@@ -1,25 +1,68 @@
 import { NextResponse } from 'next/server';
-import { get } from '@/lib/db';
+import bcrypt from 'bcryptjs';
+import { query } from '@/lib/db';
 
 export async function POST(req: Request) {
     try {
-        const body = await req.json();
-        const { email, password } = body;
+        const { email, password } = await req.json();
 
         if (!email || !password) {
-            return NextResponse.json({ error: 'Email and password are required' }, { status: 400 });
+            return NextResponse.json(
+                { error: 'Email y contraseña son obligatorios' },
+                { status: 400 }
+            );
         }
 
-        // Simple auth check
-        const user = await get('SELECT * FROM users WHERE (email = ? OR name = ?) AND password = ?', [email, email, password]);
+        // Find user by email
+        const users = await query(
+            'SELECT * FROM users WHERE email = ?',
+            [email]
+        );
 
-        if (user) {
-            return NextResponse.json({ success: true, user: { id: user.id, name: user.name, email: user.email } });
+        if (!users || users.length === 0) {
+            return NextResponse.json(
+                { error: 'Credenciales inválidas' },
+                { status: 401 }
+            );
+        }
+
+        const user = users[0];
+
+        // Check if password is hashed (starts with $2a$ or $2b$)
+        const isHashed = user.password.startsWith('$2');
+
+        let isValidPassword = false;
+
+        if (isHashed) {
+            // Compare with bcrypt for hashed passwords
+            isValidPassword = await bcrypt.compare(password, user.password);
         } else {
-            return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
+            // Direct comparison for legacy plain text passwords
+            isValidPassword = password === user.password;
         }
-    } catch (error) {
+
+        if (!isValidPassword) {
+            return NextResponse.json(
+                { error: 'Credenciales inválidas' },
+                { status: 401 }
+            );
+        }
+
+        // Return user data (excluding password)
+        return NextResponse.json({
+            message: 'Login exitoso',
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email
+            }
+        });
+
+    } catch (error: any) {
         console.error('Login error:', error);
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+        return NextResponse.json(
+            { error: 'Error al iniciar sesión' },
+            { status: 500 }
+        );
     }
 }

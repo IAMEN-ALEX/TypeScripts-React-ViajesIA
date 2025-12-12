@@ -130,6 +130,17 @@ export default function Login() {
                     </Button>
                 </Form>
 
+                <div className="text-center mt-3">
+                    <span className="text-white">¿No tienes cuenta? </span>
+                    <Button
+                        variant="link"
+                        className="text-info p-0"
+                        onClick={() => router.push('/register')}
+                    >
+                        Regístrate aquí
+                    </Button>
+                </div>
+
                 <div className="text-center mt-4">
                     <Link href="/forgot-password" style={{ color: '#ccc', textDecoration: 'none', fontSize: '0.9rem' }}>
                         Forgot Password?
