@@ -131,7 +131,15 @@ body {
     border-radius: 12px !important;
     padding: 12px 15px !important;
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 15px center !important;
+    background-size: 16px !important;
     /* White arrow */
+}
+
+.premium-select option {
+    background-color: #333 !important;
+    color: #fff !important;
 }
 
 .btn-premium-neon:hover {
@@ -162,4 +170,36 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
     background: #666;
+}
+
+/* Custom Dropdown Styles */
+.premium-dropdown-menu {
+    background: rgba(30, 30, 30, 0.95) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px !important;
+    padding: 8px !important;
+    margin-top: 5px !important;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5) !important;
+}
+
+.premium-dropdown-item {
+    border-radius: 8px !important;
+    padding: 10px 15px !important;
+    transition: all 0.2s ease;
+}
+
+.premium-dropdown-item:hover,
+.premium-dropdown-item:focus {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+}
+
+/* Eliminar la flecha de alternancia predeterminada si es necesario, ya que la estilizamos, o mantener el comportamiento estándar */
+.dropdown-toggle::after {
+    margin-left: auto;
+}
+
+.dropdown-toggle::after {
+    display: none !important;
 }

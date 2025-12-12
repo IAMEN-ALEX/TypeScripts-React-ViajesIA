@@ -53,3 +53,19 @@ export async function DELETE(req: Request) {
         return NextResponse.json({ error: 'Failed to delete note' }, { status: 500 });
     }
 }
+
+export async function PUT(req: Request) {
+    try {
+        const { id, content } = await req.json();
+
+        if (!id || !content) {
+            return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+        }
+
+        await query('UPDATE notes SET content = ? WHERE id = ?', [content, id]);
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        return NextResponse.json({ error: 'Failed to update note' }, { status: 500 });
+    }
+}
+

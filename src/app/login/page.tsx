@@ -32,6 +32,8 @@ export default function Login() {
             const data = await res.json();
 
             if (res.ok) {
+                const userName = data.user?.name || data.user?.email || 'Usuario';
+                localStorage.setItem('userName', userName);
                 router.push('/dashboard');
                 // In a real app, you might want to redirect to dashboard or user page
             } else {

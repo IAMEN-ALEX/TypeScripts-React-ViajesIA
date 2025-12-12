@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Container, Row, Col, Form, Button, Spinner, Badge } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, Spinner, Badge, Dropdown } from 'react-bootstrap';
 import dynamic from 'next/dynamic';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -31,14 +31,21 @@ export default function Dashboard() {
     const [endDate, setEndDate] = useState('');
     const [loading, setLoading] = useState(true);
     const [question, setQuestion] = useState('');
+    const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
+    const [editingContent, setEditingContent] = useState('');
+    const [aiResponse, setAiResponse] = useState('');
+    const [aiLoading, setAiLoading] = useState(false);
+    const [userName, setUserName] = useState('');
 
-    const destinations = ['Taiwan', 'Barbados', 'Japan', 'France', 'Italy'];
+    const destinations = ["Francia", "España", "Estados Unidos", "Italia", "Turquía", "México", "Reino Unido", "Alemania", "Tailandia", "Japón", "Grecia", "Austria", "Emiratos Árabes Unidos", "Países Bajos", "Arabia Saudita", "Suiza", "Portugal", "Canadá", "India", "Australia", "Singapur", "Malasia", "Vietnam", "Indonesia", "Egipto", "Marruecos", "Argentina", "Brasil", "Perú", "Chile", "Taiwán", "Barbados"];
 
     useEffect(() => {
         fetchTrips();
+        setUserName(localStorage.getItem('userName') || '');
     }, []);
 
     const handleLogout = () => {
+        localStorage.removeItem('userName');
         router.push('/login');
     };
 
@@ -111,6 +118,52 @@ export default function Dashboard() {
         }
     };
 
+    const handleStartEdit = (note: Note) => {
+        setEditingNoteId(note.id);
+        setEditingContent(note.content);
+    };
+
+    const handleCancelEdit = () => {
+        setEditingNoteId(null);
+        setEditingContent('');
+    };
+
+    const handleSaveEdit = async (id: number) => {
+        try {
+            await fetch('/api/notes', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, content: editingContent }),
+            });
+            setEditingNoteId(null);
+            setEditingContent('');
+            fetchTrips();
+        } catch (error) {
+            console.error('Error updating note:', error);
+        }
+    };
+
+    const handleAskQuestion = async () => {
+        if (!question) return;
+        setAiLoading(true);
+        setAiResponse('');
+        try {
+            const res = await fetch('/api/ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question }),
+            });
+            const data = await res.json();
+            setAiResponse(data.answer);
+        } catch (error) {
+            console.error('Error asking AI:', error);
+            setAiResponse('Error connecting to AI service.');
+        } finally {
+            setAiLoading(false);
+        }
+    };
+
+
     if (loading) {
         return (
             <div className="premium-bg d-flex justify-content-center align-items-center vh-100">
@@ -132,14 +185,22 @@ export default function Dashboard() {
 
             <Container className="py-5 position-relative" style={{ maxWidth: '900px', zIndex: 10 }}>
                 <div className="d-flex justify-content-end mb-4">
-                    <Button
-                        variant="outline-light"
-                        onClick={handleLogout}
-                        className="px-4 py-2 rounded-pill"
-                        style={{ backdropFilter: 'blur(10px)', background: 'rgba(255,255,255,0.1)' }}
-                    >
-                        Logout
-                    </Button>
+                    <div className="d-flex flex-column align-items-end gap-2">
+                        {userName && (
+                            <div className="text-white d-flex align-items-center gap-2">
+                                <span style={{ opacity: 0.7 }}>Usuario:</span>
+                                <span className="fw-bold title-glow" style={{ fontSize: '1.1rem' }}>{userName}</span>
+                            </div>
+                        )}
+                        <Button
+                            variant="outline-light"
+                            onClick={handleLogout}
+                            className="px-4 py-2 rounded-pill"
+                            style={{ backdropFilter: 'blur(10px)', background: 'rgba(255,255,255,0.1)' }}
+                        >
+                            Logout
+                        </Button>
+                    </div>
                 </div>
 
                 {/* Ask a Question Section */}
@@ -155,10 +216,23 @@ export default function Dashboard() {
                         />
                     </Form.Group>
                     <div className="d-grid gap-2">
-                        <Button className="btn-premium-neon py-2">
-                            Pregunta
+                        <Button
+                            className="btn-premium-neon py-2"
+                            onClick={handleAskQuestion}
+                            disabled={aiLoading}
+                        >
+                            {aiLoading ? <Spinner size="sm" animation="border" /> : 'Pregunta'}
                         </Button>
                     </div>
+                    {aiResponse && (
+                        <div className="mt-4 p-3 rounded-3 text-start" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }}>
+                            <div className="d-flex justify-content-between align-items-start mb-2">
+                                <h5 className="text-white mb-0">Respuesta IA:</h5>
+                                <Button variant="link" className="text-white p-0" style={{ textDecoration: 'none' }} onClick={() => setAiResponse('')}>✕</Button>
+                            </div>
+                            <p className="text-white-50 mb-0" style={{ whiteSpace: 'pre-wrap' }}>{aiResponse}</p>
+                        </div>
+                    )}
                 </div>
 
                 {/* Add Trip Section */}
@@ -167,14 +241,30 @@ export default function Dashboard() {
                     <div className="bg-transparent">
                         <Row className="g-3 align-items-end">
                             <Col md={4}>
-                                <Form.Select
-                                    className="premium-select"
-                                    value={destination}
-                                    onChange={(e) => setDestination(e.target.value)}
-                                >
-                                    <option value="">Seleccionar Destino</option>
-                                    {destinations.map(d => <option key={d} value={d}>{d}</option>)}
-                                </Form.Select>
+                                <Dropdown onSelect={(eventKey) => setDestination(eventKey || '')}>
+                                    <Dropdown.Toggle
+                                        className="premium-select w-100 d-flex justify-content-between align-items-center text-start"
+                                        id="dropdown-destination"
+                                        style={{
+                                            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                                            border: '1px solid rgba(255, 255, 255, 0.2)',
+                                            color: '#fff',
+                                            borderRadius: '12px',
+                                            padding: '12px 15px',
+                                        }}
+                                        variant="transparent"
+                                    >
+                                        {destination || 'Seleccionar Destino'}
+                                    </Dropdown.Toggle>
+
+                                    <Dropdown.Menu className="w-100 premium-dropdown-menu" style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                                        {destinations.map(d => (
+                                            <Dropdown.Item key={d} eventKey={d} className="text-white premium-dropdown-item">
+                                                {d}
+                                            </Dropdown.Item>
+                                        ))}
+                                    </Dropdown.Menu>
+                                </Dropdown>
                             </Col>
                             <Col md={3}>
                                 <Form.Control
@@ -223,10 +313,30 @@ export default function Dashboard() {
                             <div className="d-flex flex-column gap-2 mb-3">
                                 {trip.notes?.map(note => (
                                     <div key={note.id} className="d-flex justify-content-between align-items-center p-3 rounded-3" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.1)' }}>
-                                        <span className="text-white">{note.content}</span>
-                                        <Button variant="danger" size="sm" style={{ width: '28px', height: '28px', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '4px' }} onClick={() => handleDeleteNote(note.id)}>
-                                            x
-                                        </Button>
+                                        {editingNoteId === note.id ? (
+                                            <>
+                                                <Form.Control
+                                                    type="text"
+                                                    className="premium-input me-2"
+                                                    value={editingContent}
+                                                    onChange={(e) => setEditingContent(e.target.value)}
+                                                />
+                                                <div className="d-flex gap-2">
+                                                    <Button variant="success" size="sm" onClick={() => handleSaveEdit(note.id)}>Guardar</Button>
+                                                    <Button variant="secondary" size="sm" onClick={handleCancelEdit}>Cancelar</Button>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <span className="text-white">{note.content}</span>
+                                                <div className="d-flex gap-2">
+                                                    <Button variant="info" size="sm" onClick={() => handleStartEdit(note)}>Editar</Button>
+                                                    <Button variant="danger" size="sm" style={{ width: '28px', height: '28px', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '4px' }} onClick={() => handleDeleteNote(note.id)}>
+                                                        x
+                                                    </Button>
+                                                </div>
+                                            </>
+                                        )}
                                     </div>
                                 ))}
                             </div>
