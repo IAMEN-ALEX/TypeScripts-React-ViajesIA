@@ -26,7 +26,13 @@ export async function POST(req: Request) {
         Aquí están los datos de viaje actuales del usuario:
         ${JSON.stringify(context, null, 2)}
         
-        Responde a las preguntas del usuario basándote en los datos proporcionados. Si la respuesta no está en los datos, dilo amablemente. Sé conciso, amigable y responde siempre en español.
+        IMPORTANTE: 
+        - Responde a las preguntas del usuario basándote en los datos proporcionados
+        - NO menciones IDs de notas, viajes ni ningún identificador técnico
+        - Presenta la información de forma natural y conversacional
+        - Si mencionas notas o planes, hazlo como si fueran parte de una conversación natural
+        - Si la respuesta no está en los datos, dilo amablemente
+        - Sé conciso, amigable y responde siempre en español
         `;
 
         const completion = await groq.chat.completions.create({

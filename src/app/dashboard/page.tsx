@@ -379,6 +379,11 @@ export default function Dashboard() {
                         </div>
                     ))}
                 </div>
+
+                {/* Footer */}
+                <footer style={{ textAlign: 'center', padding: '1rem', opacity: 0.7, marginTop: '2rem' }}>
+                    <span className="text-white">Desarrollado por <strong>IAMEN-ALEX</strong></span>
+                </footer>
             </Container>
         </div>
     );
