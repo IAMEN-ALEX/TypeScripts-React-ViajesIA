@@ -237,7 +237,21 @@ export default function Dashboard() {
 
                 {/* Add Trip Section */}
                 <div className="mb-5">
-                    <h3 className="text-white text-center mb-4 title-glow">Agrega un viaje</h3>
+                    <h3 className="text-white text-center mb-4 title-glow d-flex align-items-center justify-content-center gap-3">
+                        Agrega un viaje
+                        {destination && (
+                            <span
+                                className="fs-6 px-3 py-2 badge"
+                                style={{
+                                    background: 'linear-gradient(45deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%)',
+                                    color: '#555',
+                                    border: '1px solid #fff'
+                                }}
+                            >
+                                {destination}
+                            </span>
+                        )}
+                    </h3>
                     <div className="bg-transparent">
                         <Row className="g-3 align-items-end">
                             <Col md={4}>
