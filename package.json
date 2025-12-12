@@ -1,7 +1,8 @@
 {
   "name": "notadeviajesia",
   "version": "1.0.0",
-  "description": "",
+  "description": "Aplicación web moderna para planificar viajes con asistencia de IA",
+  "author": "IAMEN-ALEX",
   "main": "index.js",
   "scripts": {
     "dev": "next dev",

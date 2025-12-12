@@ -6,6 +6,17 @@
 # testing
 /coverage
 
+# test files
+test_*.js
+test_*.py
+*_test.js
+*_test.py
+check_models.js
+list_models.py
+list_groq_models.js
+models.txt
+
+
 # next.js
 /.next/
 /out/
