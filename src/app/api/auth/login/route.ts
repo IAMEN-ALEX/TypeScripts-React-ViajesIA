@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { query } from '@/lib/db';
+import { User } from '@/types';
 
 export async function POST(req: Request) {
     try {
@@ -14,7 +15,7 @@ export async function POST(req: Request) {
         }
 
         // Find user by email
-        const users = await query(
+        const users = await query<User>(
             'SELECT * FROM users WHERE email = ?',
             [email]
         );

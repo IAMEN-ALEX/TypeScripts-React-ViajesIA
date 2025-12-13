@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { query } from '@/lib/db';
+import { query, run } from '@/lib/db';
 
 export async function GET(req: Request) {
     try {
@@ -26,15 +26,18 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
 
-        const result: any = await query(
-            'INSERT INTO notes (trip_id, content) VALUES (?, ?) RETURNING id',
+        const result = await run(
+            'INSERT INTO notes (trip_id, content) VALUES (?, ?)',
             [trip_id, content]
         );
 
-        return NextResponse.json({ success: true, id: result[0]?.id });
-    } catch (error) {
+        return NextResponse.json({ success: true, id: result.lastID });
+    } catch (error: any) {
         console.error(error);
-        return NextResponse.json({ error: 'Failed to create note' }, { status: 500 });
+        return NextResponse.json({
+            error: 'Failed to create note',
+            details: error.message
+        }, { status: 500 });
     }
 }
 
@@ -47,10 +50,13 @@ export async function DELETE(req: Request) {
             return NextResponse.json({ error: 'Missing id' }, { status: 400 });
         }
 
-        await query('DELETE FROM notes WHERE id = ?', [id]);
+        await run('DELETE FROM notes WHERE id = ?', [id]);
         return NextResponse.json({ success: true });
-    } catch (error) {
-        return NextResponse.json({ error: 'Failed to delete note' }, { status: 500 });
+    } catch (error: any) {
+        return NextResponse.json({
+            error: 'Failed to delete note',
+            details: error.message
+        }, { status: 500 });
     }
 }
 
@@ -62,10 +68,13 @@ export async function PUT(req: Request) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
 
-        await query('UPDATE notes SET content = ? WHERE id = ?', [content, id]);
+        await run('UPDATE notes SET content = ? WHERE id = ?', [content, id]);
         return NextResponse.json({ success: true });
-    } catch (error) {
-        return NextResponse.json({ error: 'Failed to update note' }, { status: 500 });
+    } catch (error: any) {
+        return NextResponse.json({
+            error: 'Failed to update note',
+            details: error.message
+        }, { status: 500 });
     }
 }
 

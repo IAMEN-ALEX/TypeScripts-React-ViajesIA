@@ -22,7 +22,7 @@ export async function POST(req: Request) {
         }
 
         // Check if user already exists
-        const existingUser = await query(
+        const existingUser = await query<{ id: number }>(
             'SELECT id FROM users WHERE email = ?',
             [email]
         );
@@ -54,7 +54,10 @@ export async function POST(req: Request) {
     } catch (error: any) {
         console.error('Registration error:', error);
         return NextResponse.json(
-            { error: 'Error al registrar usuario' },
+            {
+                error: 'Error al registrar usuario',
+                details: error.message
+            },
             { status: 500 }
         );
     }
