@@ -22,7 +22,7 @@ export async function POST(req: Request) {
         }
 
         // Check if user exists
-        const users = await query(
+        const users = await query<{ id: number }>(
             'SELECT id FROM users WHERE email = ?',
             [email]
         );
@@ -53,7 +53,10 @@ export async function POST(req: Request) {
     } catch (error: any) {
         console.error('Password reset error:', error);
         return NextResponse.json(
-            { error: 'Error al restablecer contraseña' },
+            {
+                error: 'Error al restablecer contraseña',
+                details: error.message
+            },
             { status: 500 }
         );
     }

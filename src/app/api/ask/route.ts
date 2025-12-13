@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import Groq from 'groq-sdk';
 import { query } from '@/lib/db';
+import { Trip, Note } from '@/types';
 
 const groq = new Groq({
     apiKey: process.env.GROQ_API_KEY
@@ -11,8 +12,8 @@ export async function POST(req: Request) {
         const { question } = await req.json();
 
         // Fetch all trips and notes to provide context
-        const trips: any = await query('SELECT * FROM trips');
-        const notes: any = await query('SELECT * FROM notes');
+        const trips = await query<Trip>('SELECT * FROM trips');
+        const notes = await query<Note>('SELECT * FROM notes');
 
         // Structure data for context
         const context = {

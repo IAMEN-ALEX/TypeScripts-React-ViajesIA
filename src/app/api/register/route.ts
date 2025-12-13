@@ -22,7 +22,7 @@ export async function POST(req: Request) {
         }
 
         // Check if user already exists
-        const existingUser = await query(
+        const existingUser = await query<{ id: number }>(
             'SELECT id FROM users WHERE email = ?',
             [email]
         );

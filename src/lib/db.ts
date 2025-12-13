@@ -7,17 +7,17 @@ const formatQuery = (text: string): string => {
 };
 
 // Universal query function
-export const query = async (queryString: string, params: any[] = []): Promise<any[]> => {
+export const query = async <T = any>(queryString: string, params: any[] = []): Promise<T[]> => {
   const formattedQuery = formatQuery(queryString);
   const result = await sql.query(formattedQuery, params);
-  return result.rows;
+  return result.rows as T[];
 };
 
 // Universal get function (single row)
-export const get = async (queryString: string, params: any[] = []): Promise<any> => {
+export const get = async <T = any>(queryString: string, params: any[] = []): Promise<T> => {
   const formattedQuery = formatQuery(queryString);
   const result = await sql.query(formattedQuery, params);
-  return result.rows[0];
+  return result.rows[0] as T;
 };
 
 // Universal run function (INSERT, UPDATE, DELETE)
