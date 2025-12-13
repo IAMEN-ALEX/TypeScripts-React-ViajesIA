@@ -46,7 +46,11 @@ export async function POST(req: Request) {
         return NextResponse.json(
             {
                 message: 'Usuario registrado exitosamente',
-                userId: result.lastID
+                userId: result.lastID,
+                user: {
+                    name,
+                    email
+                }
             },
             { status: 201 }
         );

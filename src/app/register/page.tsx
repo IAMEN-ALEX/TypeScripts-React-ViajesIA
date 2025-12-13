@@ -54,8 +54,9 @@ export default function Register() {
             const data = await res.json();
 
             if (res.ok) {
-                // Registration successful, redirect to login
-                router.push('/login?registered=true');
+                // Registration successful, auto-login and redirect to dashboard
+                localStorage.setItem('userName', data.user.name);
+                router.push('/dashboard');
             } else {
                 setError(data.error || 'Error al registrar usuario');
             }
