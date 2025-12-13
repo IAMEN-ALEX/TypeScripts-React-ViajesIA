@@ -56,80 +56,83 @@ if (!isVercel) {
       }
     });
   });
-  // Helper to convert ? to $1, $2, etc. for Postgres
-  const formatQuery = (text: string): string => {
-    let i = 0;
-    return text.replace(/\?/g, () => `$${++i}`);
-  };
+});
+}
 
-  // Universal query function
-  export const query = async (queryString: string, params: any[] = []): Promise<any[]> => {
-    if (isVercel) {
-      // Use Vercel Postgres
-      const formattedQuery = formatQuery(queryString);
+// Helper to convert ? to $1, $2, etc. for Postgres
+const formatQuery = (text: string): string => {
+  let i = 0;
+  return text.replace(/\?/g, () => `$${++i}`);
+};
+
+// Universal query function
+export const query = async (queryString: string, params: any[] = []): Promise<any[]> => {
+  if (isVercel) {
+    // Use Vercel Postgres
+    const formattedQuery = formatQuery(queryString);
+    const result = await sql.query(formattedQuery, params);
+    return result.rows;
+  } else {
+    // Use SQLite
+    return new Promise((resolve, reject) => {
+      db!.all(queryString, params, (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
+  }
+};
+
+// Universal get function (single row)
+export const get = async (queryString: string, params: any[] = []): Promise<any> => {
+  if (isVercel) {
+    // Use Vercel Postgres
+    const formattedQuery = formatQuery(queryString);
+    const result = await sql.query(formattedQuery, params);
+    return result.rows[0];
+  } else {
+    // Use SQLite
+    return new Promise((resolve, reject) => {
+      db!.get(queryString, params, (err, row) => {
+        if (err) reject(err);
+        else resolve(row);
+      });
+    });
+  }
+};
+
+// Universal run function (INSERT, UPDATE, DELETE)
+export const run = async (queryString: string, params: any[] = []): Promise<any> => {
+  if (isVercel) {
+    // Use Vercel Postgres
+    let formattedQuery = formatQuery(queryString);
+
+    // If it's an INSERT, we need to return the ID to match SQLite behavior
+    if (/^INSERT\s/i.test(formattedQuery.trim()) && !/RETURNING/i.test(formattedQuery)) {
+      formattedQuery += ' RETURNING id';
+    }
+
+    try {
       const result = await sql.query(formattedQuery, params);
-      return result.rows;
-    } else {
-      // Use SQLite
-      return new Promise((resolve, reject) => {
-        db!.all(queryString, params, (err, rows) => {
-          if (err) reject(err);
-          else resolve(rows);
-        });
-      });
+      // Map Postgres result to SQLite-style result object
+      // For INSERT with RETURNING id, the id will be in rows[0].id
+      return {
+        lastID: result.rows[0]?.id || 0,
+        changes: result.rowCount
+      };
+    } catch (error) {
+      console.error('Database Error:', error);
+      throw error;
     }
-  };
-
-  // Universal get function (single row)
-  export const get = async (queryString: string, params: any[] = []): Promise<any> => {
-    if (isVercel) {
-      // Use Vercel Postgres
-      const formattedQuery = formatQuery(queryString);
-      const result = await sql.query(formattedQuery, params);
-      return result.rows[0];
-    } else {
-      // Use SQLite
-      return new Promise((resolve, reject) => {
-        db!.get(queryString, params, (err, row) => {
-          if (err) reject(err);
-          else resolve(row);
-        });
+  } else {
+    // Use SQLite
+    return new Promise((resolve, reject) => {
+      db!.run(queryString, params, function (err) {
+        if (err) reject(err);
+        else resolve({ lastID: this.lastID, changes: this.changes });
       });
-    }
-  };
+    });
+  }
+};
 
-  // Universal run function (INSERT, UPDATE, DELETE)
-  export const run = async (queryString: string, params: any[] = []): Promise<any> => {
-    if (isVercel) {
-      // Use Vercel Postgres
-      let formattedQuery = formatQuery(queryString);
-
-      // If it's an INSERT, we need to return the ID to match SQLite behavior
-      if (/^INSERT\s/i.test(formattedQuery.trim()) && !/RETURNING/i.test(formattedQuery)) {
-        formattedQuery += ' RETURNING id';
-      }
-
-      try {
-        const result = await sql.query(formattedQuery, params);
-        // Map Postgres result to SQLite-style result object
-        // For INSERT with RETURNING id, the id will be in rows[0].id
-        return {
-          lastID: result.rows[0]?.id || 0,
-          changes: result.rowCount
-        };
-      } catch (error) {
-        console.error('Database Error:', error);
-        throw error;
-      }
-    } else {
-      // Use SQLite
-      return new Promise((resolve, reject) => {
-        db!.run(queryString, params, function (err) {
-          if (err) reject(err);
-          else resolve({ lastID: this.lastID, changes: this.changes });
-        });
-      });
-    }
-  };
-
-  export const getDb = () => db;
+export const getDb = () => db;
