@@ -66,7 +66,8 @@ if (!isVercel) {
   export const query = async (queryString: string, params: any[] = []): Promise<any[]> => {
     if (isVercel) {
       // Use Vercel Postgres
-      const result = await sql.query(queryString, params);
+      const formattedQuery = formatQuery(queryString);
+      const result = await sql.query(formattedQuery, params);
       return result.rows;
     } else {
       // Use SQLite
@@ -83,7 +84,8 @@ if (!isVercel) {
   export const get = async (queryString: string, params: any[] = []): Promise<any> => {
     if (isVercel) {
       // Use Vercel Postgres
-      const result = await sql.query(queryString, params);
+      const formattedQuery = formatQuery(queryString);
+      const result = await sql.query(formattedQuery, params);
       return result.rows[0];
     } else {
       // Use SQLite
@@ -100,8 +102,25 @@ if (!isVercel) {
   export const run = async (queryString: string, params: any[] = []): Promise<any> => {
     if (isVercel) {
       // Use Vercel Postgres
-      const result = await sql.query(queryString, params);
-      return result;
+      let formattedQuery = formatQuery(queryString);
+
+      // If it's an INSERT, we need to return the ID to match SQLite behavior
+      if (/^INSERT\s/i.test(formattedQuery.trim()) && !/RETURNING/i.test(formattedQuery)) {
+        formattedQuery += ' RETURNING id';
+      }
+
+      try {
+        const result = await sql.query(formattedQuery, params);
+        // Map Postgres result to SQLite-style result object
+        // For INSERT with RETURNING id, the id will be in rows[0].id
+        return {
+          lastID: result.rows[0]?.id || 0,
+          changes: result.rowCount
+        };
+      } catch (error) {
+        console.error('Database Error:', error);
+        throw error;
+      }
     } else {
       // Use SQLite
       return new Promise((resolve, reject) => {
