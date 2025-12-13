@@ -56,7 +56,6 @@ if (!isVercel) {
       }
     });
   });
-});
 }
 
 // Helper to convert ? to $1, $2, etc. for Postgres
