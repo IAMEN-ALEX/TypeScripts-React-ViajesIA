@@ -205,7 +205,7 @@ export default function Dashboard() {
 
                 {/* Ask a Question Section */}
                 <div className="mb-5 text-center">
-                    <h2 className="text-white mb-4 title-glow">Hace una Pregunta acerca de los viajes!</h2>
+                    <h2 className="text-white mb-4 title-glow">Hace una Pregunta acerca de tus viajes!</h2>
                     <Form.Group className="mb-3">
                         <Form.Control
                             type="text"
