@@ -56,57 +56,61 @@ if (!isVercel) {
       }
     });
   });
-}
+  // Helper to convert ? to $1, $2, etc. for Postgres
+  const formatQuery = (text: string): string => {
+    let i = 0;
+    return text.replace(/\?/g, () => `$${++i}`);
+  };
 
-// Universal query function
-export const query = async (queryString: string, params: any[] = []): Promise<any[]> => {
-  if (isVercel) {
-    // Use Vercel Postgres
-    const result = await sql.query(queryString, params);
-    return result.rows;
-  } else {
-    // Use SQLite
-    return new Promise((resolve, reject) => {
-      db!.all(queryString, params, (err, rows) => {
-        if (err) reject(err);
-        else resolve(rows);
+  // Universal query function
+  export const query = async (queryString: string, params: any[] = []): Promise<any[]> => {
+    if (isVercel) {
+      // Use Vercel Postgres
+      const result = await sql.query(queryString, params);
+      return result.rows;
+    } else {
+      // Use SQLite
+      return new Promise((resolve, reject) => {
+        db!.all(queryString, params, (err, rows) => {
+          if (err) reject(err);
+          else resolve(rows);
+        });
       });
-    });
-  }
-};
+    }
+  };
 
-// Universal get function (single row)
-export const get = async (queryString: string, params: any[] = []): Promise<any> => {
-  if (isVercel) {
-    // Use Vercel Postgres
-    const result = await sql.query(queryString, params);
-    return result.rows[0];
-  } else {
-    // Use SQLite
-    return new Promise((resolve, reject) => {
-      db!.get(queryString, params, (err, row) => {
-        if (err) reject(err);
-        else resolve(row);
+  // Universal get function (single row)
+  export const get = async (queryString: string, params: any[] = []): Promise<any> => {
+    if (isVercel) {
+      // Use Vercel Postgres
+      const result = await sql.query(queryString, params);
+      return result.rows[0];
+    } else {
+      // Use SQLite
+      return new Promise((resolve, reject) => {
+        db!.get(queryString, params, (err, row) => {
+          if (err) reject(err);
+          else resolve(row);
+        });
       });
-    });
-  }
-};
+    }
+  };
 
-// Universal run function (INSERT, UPDATE, DELETE)
-export const run = async (queryString: string, params: any[] = []): Promise<any> => {
-  if (isVercel) {
-    // Use Vercel Postgres
-    const result = await sql.query(queryString, params);
-    return result;
-  } else {
-    // Use SQLite
-    return new Promise((resolve, reject) => {
-      db!.run(queryString, params, function (err) {
-        if (err) reject(err);
-        else resolve({ lastID: this.lastID, changes: this.changes });
+  // Universal run function (INSERT, UPDATE, DELETE)
+  export const run = async (queryString: string, params: any[] = []): Promise<any> => {
+    if (isVercel) {
+      // Use Vercel Postgres
+      const result = await sql.query(queryString, params);
+      return result;
+    } else {
+      // Use SQLite
+      return new Promise((resolve, reject) => {
+        db!.run(queryString, params, function (err) {
+          if (err) reject(err);
+          else resolve({ lastID: this.lastID, changes: this.changes });
+        });
       });
-    });
-  }
-};
+    }
+  };
 
-export const getDb = () => db;
+  export const getDb = () => db;
