@@ -59,7 +59,24 @@ export default function TripForm({ onAddTrip }: TripFormProps) {
                                 {destination || 'Seleccionar Destino'}
                             </Dropdown.Toggle>
 
-                            <Dropdown.Menu className="w-100 premium-dropdown-menu" style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                            <Dropdown.Menu
+                                className="w-100 premium-dropdown-menu"
+                                style={{ maxHeight: '300px', overflowY: 'auto' }}
+                                popperConfig={{
+                                    modifiers: [
+                                        {
+                                            name: 'flip',
+                                            enabled: false,
+                                        },
+                                        {
+                                            name: 'preventOverflow',
+                                            options: {
+                                                boundary: 'viewport',
+                                            },
+                                        },
+                                    ],
+                                }}
+                            >
                                 {DESTINATIONS.map(d => (
                                     <Dropdown.Item key={d} eventKey={d} className="text-white premium-dropdown-item">
                                         {d}
