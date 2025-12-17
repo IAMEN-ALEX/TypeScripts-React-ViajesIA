@@ -62,7 +62,10 @@ export async function POST(req: Request) {
     } catch (error: any) {
         console.error('Login error:', error);
         return NextResponse.json(
-            { error: 'Error al iniciar sesión' },
+            {
+                error: 'Error al iniciar sesión',
+                details: error.message
+            },
             { status: 500 }
         );
     }

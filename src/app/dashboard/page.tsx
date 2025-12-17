@@ -6,103 +6,28 @@ import { Container, Button, Spinner } from 'react-bootstrap';
 import dynamic from 'next/dynamic';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { TripWithNotes, Trip } from '@/types';
-import TripForm from '@/components/dashboard/TripForm';
-import TripList from '@/components/dashboard/TripList';
-import AIAssistant from '@/components/dashboard/AIAssistant';
+import { useTrips } from '@/hooks/useTrips';
+import TripForm from '@/components/features/TripForm';
+import TripList from '@/components/features/TripList';
+import AIAssistant from '@/components/features/AIAssistant';
+import NoteList from '@/components/features/NoteList';
 
 // Dynamically import FloatingLines
 const FloatingLines = dynamic(() => import('@/components/ui/FloatingLines'), { ssr: false });
 
 export default function Dashboard() {
     const router = useRouter();
-    const [trips, setTrips] = useState<TripWithNotes[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { trips, loading, addTrip, deleteTrip, addNote, deleteNote, updateNote } = useTrips();
     const [userName, setUserName] = useState('');
 
     useEffect(() => {
-        fetchTrips();
         setUserName(localStorage.getItem('userName') || '');
     }, []);
 
     const handleLogout = () => {
         localStorage.removeItem('userName');
+        localStorage.removeItem('userId');
         router.push('/login');
-    };
-
-    const fetchTrips = async () => {
-        try {
-            const res = await fetch('/api/trips');
-            const data = await res.json();
-
-            const tripsWithNotes = await Promise.all(data.map(async (trip: Trip) => {
-                const notesRes = await fetch(`/api/notes?trip_id=${trip.id}`);
-                const notes = await notesRes.json();
-                return { ...trip, notes };
-            }));
-
-            setTrips(tripsWithNotes);
-            setLoading(false);
-        } catch (error) {
-            console.error('Error fetching trips:', error);
-            setLoading(false);
-        }
-    };
-
-    const handleAddTrip = async (destination: string, startDate: string, endDate: string) => {
-        try {
-            await fetch('/api/trips', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ destination, start_date: startDate, end_date: endDate }),
-            });
-            fetchTrips();
-        } catch (error) {
-            console.error('Error adding trip:', error);
-        }
-    };
-
-    const handleDeleteTrip = async (id: number) => {
-        try {
-            await fetch(`/api/trips?id=${id}`, { method: 'DELETE' });
-            fetchTrips();
-        } catch (error) {
-            console.error('Error deleting trip:', error);
-        }
-    };
-
-    const handleAddNote = async (tripId: number, content: string) => {
-        try {
-            await fetch('/api/notes', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ trip_id: tripId, content }),
-            });
-            fetchTrips();
-        } catch (error) {
-            console.error('Error adding note:', error);
-        }
-    };
-
-    const handleDeleteNote = async (id: number) => {
-        try {
-            await fetch(`/api/notes?id=${id}`, { method: 'DELETE' });
-            fetchTrips();
-        } catch (error) {
-            console.error('Error deleting note:', error);
-        }
-    };
-
-    const handleUpdateNote = async (id: number, content: string) => {
-        try {
-            await fetch('/api/notes', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id, content }),
-            });
-            fetchTrips();
-        } catch (error) {
-            console.error('Error updating note:', error);
-        }
     };
 
     if (loading) {
@@ -146,14 +71,14 @@ export default function Dashboard() {
 
                 <AIAssistant />
 
-                <TripForm onAddTrip={handleAddTrip} />
+                <TripForm onAddTrip={addTrip} />
 
                 <TripList
                     trips={trips}
-                    onDeleteTrip={handleDeleteTrip}
-                    onAddNote={handleAddNote}
-                    onDeleteNote={handleDeleteNote}
-                    onUpdateNote={handleUpdateNote}
+                    onDeleteTrip={deleteTrip}
+                    onAddNote={addNote}
+                    onDeleteNote={deleteNote}
+                    onUpdateNote={updateNote}
                 />
 
                 <footer style={{ textAlign: 'center', padding: '1rem', opacity: 0.7, marginTop: '2rem' }}>

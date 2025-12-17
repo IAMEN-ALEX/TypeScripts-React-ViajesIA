@@ -32,3 +32,13 @@ export interface APIError {
     error: string;
     details?: string;
 }
+
+export interface AuthResponse {
+    user?: {
+        id?: number;
+        name?: string;
+        email?: string;
+    };
+    error?: string;
+    details?: string;
+}

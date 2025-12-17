@@ -3,12 +3,17 @@ import Groq from 'groq-sdk';
 import { query } from '@/lib/db';
 import { Trip, Note } from '@/types';
 
-const groq = new Groq({
-    apiKey: process.env.GROQ_API_KEY
-});
+// Groq client will be initialized lazily inside the handler
 
 export async function POST(req: Request) {
     try {
+        const apiKey = process.env.GROQ_API_KEY;
+        if (!apiKey) {
+            return NextResponse.json({ error: 'Server configuration error: GROQ_API_KEY is missing' }, { status: 500 });
+        }
+
+        const groq = new Groq({ apiKey });
+
         const { question } = await req.json();
 
         // Fetch all trips and notes to provide context

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { Form, Button } from 'react-bootstrap';
@@ -13,37 +14,15 @@ export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
-    const [error, setError] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
+    const { login, isLoading, error, setError } = useAuth();
     const router = useRouter();
+    // Local error state to clear errors on input change if needed, but hook manages it well. 
+    // Actually the hook provides setError, so we can use it to clear or set local validation errors.
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError('');
-        setIsLoading(true);
 
-        try {
-            const res = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            });
-
-            const data = await res.json();
-
-            if (res.ok) {
-                const userName = data.user?.name || data.user?.email || 'Usuario';
-                localStorage.setItem('userName', userName);
-                router.push('/dashboard');
-                // In a real app, you might want to redirect to dashboard or user page
-            } else {
-                setError(data.error || 'Login failed');
-            }
-        } catch (err) {
-            setError('An unexpected error occurred.');
-        } finally {
-            setIsLoading(false);
-        }
+        await login(email, password);
     };
 
     return (
@@ -65,7 +44,7 @@ export default function Login() {
 
                 {error && <div className="alert alert-danger py-2">{error}</div>}
 
-                <Form onSubmit={handleLogin}>
+                <Form onSubmit={handleLogin} autoComplete="off">
                     <Form.Group className="mb-4 position-relative" controlId="formBasicEmail">
                         <Form.Label className="text-white fw-semibold ms-1">Username</Form.Label>
                         <div className="position-relative">
@@ -80,7 +59,9 @@ export default function Login() {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 className="login-input py-3"
+                                autoComplete="off"
                                 required
+                                suppressHydrationWarning
                             />
                         </div>
                     </Form.Group>
@@ -99,7 +80,9 @@ export default function Login() {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 className="login-input py-3"
+                                autoComplete="new-password"
                                 required
+                                suppressHydrationWarning
                             />
                             <span
                                 className="password-toggle"
