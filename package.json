@@ -8,19 +8,28 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "type-check": "tsc --noEmit",
+    "lint:fix": "next lint --fix",
+    "clean": "rimraf .next node_modules/.cache tsconfig.tsbuildinfo",
+    "clean:all": "rimraf .next node_modules/.cache tsconfig.tsbuildinfo node_modules package-lock.json",
+    "db:migrate": "node migrate-db.js",
+    "db:init": "node check-db.js",
+    "prebuild": "npm run type-check",
+    "postinstall": "npm run type-check"
   },
   "keywords": [],
   "license": "ISC",
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
+    "@types/pg": "^8.16.0",
     "@types/three": "^0.181.0",
-    "@vercel/postgres": "^0.10.0",
     "bcryptjs": "^3.0.3",
     "bootstrap": "^5.3.8",
     "dotenv": "^17.2.3",
     "groq-sdk": "^0.37.0",
     "next": "^16.0.8",
+    "pg": "^8.16.3",
     "react": "^19.2.1",
     "react-bootstrap": "^2.10.10",
     "react-dom": "^19.2.1",
@@ -33,6 +42,7 @@
     "@types/react-dom": "^19.2.3",
     "eslint": "^9.39.1",
     "eslint-config-next": "^16.0.8",
+    "rimraf": "^6.1.2",
     "typescript": "^5.9.3"
   }
 }

@@ -8,6 +8,11 @@
             #2a8af6 0deg,
             #a853ba 180deg,
             #e92a67 360deg);
+    --btn-gradient-start: #7b2cbf;
+    --btn-gradient-end: #c77dff;
+    --input-bg: rgba(255, 255, 255, 0.15);
+    --input-focus-bg: rgba(255, 255, 255, 0.25);
+    --text-color: #fff;
 }
 
 body {
@@ -41,25 +46,21 @@ body {
 }
 
 .login-input {
-    background: rgba(255, 255, 255, 0.15) !important;
-    border: none !important;
-    color: #fff !important;
-    border-radius: 10px !important;
-    padding-left: 45px !important;
-    /* Space for icon */
+    background: var(--input-bg);
+    border: none;
+    color: var(--text-color);
+    border-radius: 10px;
+    padding-left: 45px;
 }
 
 .login-input:focus {
-    background: rgba(255, 255, 255, 0.25) !important;
-    box-shadow: none !important;
-    color: #fff !important;
+    background: var(--input-focus-bg);
+    box-shadow: none;
+    color: var(--text-color);
 }
 
-
-
-
 .btn-custom-gradient {
-    background: linear-gradient(90deg, #7b2cbf 0%, #c77dff 100%);
+    background: linear-gradient(90deg, var(--btn-gradient-start) 0%, var(--btn-gradient-end) 100%);
     border: none;
     color: white;
     font-weight: bold;
@@ -104,42 +105,40 @@ body {
 }
 
 .premium-input {
-    background: rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    color: #fff !important;
-    border-radius: 12px !important;
-    padding: 12px 15px !important;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-color);
+    border-radius: 12px;
+    padding: 12px 15px;
     transition: all 0.3s ease;
 }
 
 .premium-input:focus {
-    background: rgba(255, 255, 255, 0.1) !important;
-    border-color: rgba(138, 43, 226, 0.6) !important;
-    /* Neon purple border */
-    box-shadow: 0 0 15px rgba(138, 43, 226, 0.3) !important;
-    color: #fff !important;
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(138, 43, 226, 0.6);
+    box-shadow: 0 0 15px rgba(138, 43, 226, 0.3);
+    color: var(--text-color);
 }
 
 .premium-input::placeholder {
-    color: rgba(255, 255, 255, 0.5) !important;
+    color: rgba(255, 255, 255, 0.5);
 }
 
 .premium-select {
-    background-color: rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    color: #fff !important;
-    border-radius: 12px !important;
-    padding: 12px 15px !important;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") !important;
-    background-repeat: no-repeat !important;
-    background-position: right 15px center !important;
-    background-size: 16px !important;
-    /* White arrow */
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-color);
+    border-radius: 12px;
+    padding: 12px 15px;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 16px;
 }
 
 .premium-select option {
-    background-color: #333 !important;
-    color: #fff !important;
+    background-color: #333;
+    color: #fff;
 }
 
 .btn-premium-neon:hover {
@@ -174,32 +173,28 @@ body {
 
 /* Custom Dropdown Styles */
 .premium-dropdown-menu {
-    background: rgba(30, 30, 30, 0.95) !important;
+    background: rgba(30, 30, 30, 0.95);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    border-radius: 12px !important;
-    padding: 8px !important;
-    margin-top: 5px !important;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 8px;
+    margin-top: 5px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
 }
 
 .premium-dropdown-item {
-    border-radius: 8px !important;
-    padding: 10px 15px !important;
+    border-radius: 8px;
+    padding: 10px 15px;
     transition: all 0.2s ease;
 }
 
 .premium-dropdown-item:hover,
 .premium-dropdown-item:focus {
-    background: rgba(255, 255, 255, 0.1) !important;
-    color: #fff !important;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
 }
 
-/* Eliminar la flecha de alternancia predeterminada si es necesario, ya que la estilizamos, o mantener el comportamiento estándar */
 .dropdown-toggle::after {
     margin-left: auto;
-}
-
-.dropdown-toggle::after {
-    display: none !important;
+    display: none;
 }

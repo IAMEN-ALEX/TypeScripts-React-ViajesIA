@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Container, Form, Button, Alert } from 'react-bootstrap';
 import dynamic from 'next/dynamic';
+import { useAuth } from '@/hooks/useAuth';
 
 const FloatingLines = dynamic(() => import('@/components/ui/FloatingLines'), { ssr: false });
 
@@ -15,8 +16,7 @@ export default function Register() {
         password: '',
         confirmPassword: ''
     });
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
+    const { register, isLoading: loading, error, setError } = useAuth();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -38,32 +38,7 @@ export default function Register() {
             return;
         }
 
-        setLoading(true);
-
-        try {
-            const res = await fetch('/api/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name: formData.name,
-                    email: formData.email,
-                    password: formData.password
-                })
-            });
-
-            const data = await res.json();
-
-            if (res.ok) {
-                // Registration successful, redirect to login
-                router.push('/login?registered=true');
-            } else {
-                setError(data.error || 'Error al registrar usuario');
-            }
-        } catch (err) {
-            setError('Error de conexión');
-        } finally {
-            setLoading(false);
-        }
+        await register(formData.name, formData.email, formData.password);
     };
 
     return (
@@ -77,7 +52,7 @@ export default function Register() {
 
                         {error && <Alert variant="danger">{error}</Alert>}
 
-                        <Form onSubmit={handleSubmit}>
+                        <Form onSubmit={handleSubmit} autoComplete="off">
                             <Form.Group className="mb-3">
                                 <Form.Label className="text-white">Nombre</Form.Label>
                                 <Form.Control
@@ -86,6 +61,7 @@ export default function Register() {
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                     className="premium-input"
+                                    autoComplete="off"
                                 />
                             </Form.Group>
 
@@ -97,6 +73,7 @@ export default function Register() {
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                     className="premium-input"
+                                    autoComplete="off"
                                 />
                             </Form.Group>
 
@@ -108,6 +85,7 @@ export default function Register() {
                                     value={formData.password}
                                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                     className="premium-input"
+                                    autoComplete="new-password"
                                 />
                             </Form.Group>
 
@@ -119,6 +97,7 @@ export default function Register() {
                                     value={formData.confirmPassword}
                                     onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                                     className="premium-input"
+                                    autoComplete="new-password"
                                 />
                             </Form.Group>
 
